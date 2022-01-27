@@ -22,7 +22,7 @@ namespace AtivosFinanceiros.Services.DTO
         public AcaoDTO(long id, string sigla, string nomeDaEmpresa, string setor, string descricao)
         {
             Id = id;
-            Sigla = sigla.ToUpper();
+            Sigla = sigla;
             NomeDaEmpresa = nomeDaEmpresa;
             Setor = setor;
             Descricao = descricao;

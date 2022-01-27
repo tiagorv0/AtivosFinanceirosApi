@@ -118,7 +118,7 @@ namespace AtivosFinanceiros.API.Controllers
         {
             try
             {
-                var fii = await _fiiService.BuscarPorSiglaAsync(siglaDoAtivo);
+                var fii = await _fiiService.BuscarPorSiglaAsync(siglaDoAtivo.ToUpper());
 
                 if (fii == null)
                     return NotFound();

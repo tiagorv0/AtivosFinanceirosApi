@@ -120,7 +120,7 @@ namespace AtivosFinanceiros.API.Controllers
         {
             try
             {
-                var acao = await _acaoService.BuscarPorSiglaAsync(siglaDoAtivo);
+                var acao = await _acaoService.BuscarPorSiglaAsync(siglaDoAtivo.ToUpper());
 
                 if (acao == null)
                     return NotFound();
