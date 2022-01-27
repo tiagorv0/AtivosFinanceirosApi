@@ -11,6 +11,12 @@ Podendo criar, atualizar, remover, buscar todos, buscar por id, buscar por setor
 - [OpenAPI] Swagger
 - .Net 5 FrameworkCore
 
+Foi usando 4 camadas:
+- Core(Exception)
+- Domain(Model, Validators)
+- Infra(Repository, Context, Mappings)
+- Services(DTO, Service)
+
 <p><img alt="Texto da propriedade alt" title="Propriedade title" src="https://github.com/tiagorv0/AtivosFinanceirosApi/blob/master/assets/Inicial.png" /></p>
 
 <br>
