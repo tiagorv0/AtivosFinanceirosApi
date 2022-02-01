@@ -1,14 +1,17 @@
-﻿using AtivosFinanceiros.API.ViewModels;
+﻿using AtivosFinanceiros.API.Utilities;
+using AtivosFinanceiros.API.ViewModels;
+using AtivosFinanceiros.Core.Exceptions;
 using AtivosFinanceiros.Services.DTO;
 using AtivosFinanceiros.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Threading.Tasks;
 
 namespace AtivosFinanceiros.API.Controllers
 {
-    [Route("api/v1/[controller]/[action]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class FIIController : ControllerBase
     {
@@ -21,6 +24,9 @@ namespace AtivosFinanceiros.API.Controllers
             _mapper = mapper;
         }
 
+        [SwaggerResponse(201, "Criado com Sucesso", typeof(CriarViewModel))]
+        [SwaggerResponse(400, "Campos obrigatórios")]
+        [SwaggerResponse(500, "Erro Interno")]
         [HttpPost]
         public async Task<IActionResult> Criar([FromBody] CriarViewModel fiiViewModel)
         {
@@ -28,14 +34,21 @@ namespace AtivosFinanceiros.API.Controllers
             {
                 var fiiDTO = _mapper.Map<FIIDTO>(fiiViewModel);
                 var fiiCriado = await _fiiService.CriarAsync(fiiDTO);
-                return Ok(fiiCriado);
+                return CreatedAtAction(nameof(Listar), new { Id = fiiCriado.Id }, fiiCriado);
             }
-            catch(Exception e)
+            catch (DomainException e)
             {
-                return StatusCode(500, e.Message);
+                return BadRequest(ErrorMessage.DomainError(e.Message, e.Errors));
+            }
+            catch(Exception)
+            {
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
+        [SwaggerResponse(200, "Atualizado com Sucesso", typeof(AtualizarViewModel))]
+        [SwaggerResponse(400, "Campos obrigatórios")]
+        [SwaggerResponse(500, "Erro Interno")]
         [HttpPut]
         public async Task<IActionResult> Atualizar([FromBody] AtualizarViewModel fiiViewModel)
         {
@@ -45,9 +58,13 @@ namespace AtivosFinanceiros.API.Controllers
                 var fiiAtualizado = await _fiiService.AtualizarAsync(fiiDTO);
                 return Ok(fiiAtualizado);
             }
-            catch (Exception e)
+            catch (DomainException e)
             {
-                return StatusCode(500, e.Message);
+                return BadRequest(ErrorMessage.DomainError(e.Message, e.Errors));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
@@ -59,9 +76,9 @@ namespace AtivosFinanceiros.API.Controllers
                 await _fiiService.RemoverAsync(id);
                 return Ok();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
@@ -74,9 +91,9 @@ namespace AtivosFinanceiros.API.Controllers
 
                 return Ok(fiis);
             }
-            catch(Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
@@ -89,13 +106,14 @@ namespace AtivosFinanceiros.API.Controllers
 
                 return Ok(fiis);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
         [HttpGet]
+        [Route("BuscarPorNome")]
         public async Task<IActionResult> BuscarPorNome([FromQuery] string nomeDoAtivo)
         {
             try
@@ -107,13 +125,14 @@ namespace AtivosFinanceiros.API.Controllers
 
                 return Ok(fiis);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
         [HttpGet]
+        [Route("BuscarPorSigla")]
         public async Task<IActionResult> BuscarPorSigla([FromQuery] string siglaDoAtivo)
         {
             try
@@ -125,13 +144,14 @@ namespace AtivosFinanceiros.API.Controllers
 
                 return Ok(fii);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
 
         [HttpGet]
+        [Route("BuscarPorSetor")]
         public async Task<IActionResult> BuscarPorSetor([FromQuery] string setor)
         {
             try
@@ -143,9 +163,9 @@ namespace AtivosFinanceiros.API.Controllers
 
                 return Ok(fiis);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ErrorMessage.InternalError());
             }
         }
     }
